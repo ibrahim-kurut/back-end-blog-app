@@ -13,6 +13,9 @@ const app = express();
 // middleware
 app.use(express.json());
 
+// Routes
+app.use('/api/auth', require('./routes/authRoute')); //register route
+
 // Running Server
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
