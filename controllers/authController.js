@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcryptjs')
-const { User, validateRegisterUser } = require('../models/UserModel')
+const { User, validateRegisterUser, validateLoginUser } = require('../models/UserModel')
 
 
 // =================== Create a new user ===================
@@ -41,4 +41,42 @@ module.exports.registerUserCtrl = asyncHandler(async (req, res) => {
 
     //  send a response to client
     res.status(201).json({ message: 'You Registred Successfully , Please Login' })
+})
+
+// =================== Login user ===================
+/**
+ * @desc    Login user
+ * @route   /api/auth/login
+ * @method  POST
+ * @access  Public
+ */
+
+module.exports.loginUserCtrl = asyncHandler(async (req, res) => {
+    // validation 
+    const { error } = validateLoginUser(req.body)
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message })
+    }
+    // find user by email if exist or no
+    const user = await User.findOne({ email: req.body.email })
+    if (!user) {
+        return res.status(400).json({ message: "User not found check your email or password" })
+    }
+
+    // check the password
+    const validPassword = await bcrypt.compare(req.body.password, user.password)
+    if (!validPassword) {
+        return res.status(400).json({ message: "User not found check your email or password" })
+    }
+    // generate token (jwt)
+    const token = user.generateAuthToken()
+
+    // responseto client
+    res.status(200).json({
+        _id: user._id,
+        username: user.username,
+        isAdmin: user.isAdmin,
+        profilePhoto: user.profilePhoto,
+        token: token,
+    })
 })
