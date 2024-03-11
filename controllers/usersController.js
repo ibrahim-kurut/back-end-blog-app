@@ -10,7 +10,7 @@ const { User } = require('../models/UserModel')
  */
 
 module.exports.getAllUsersProfile = asyncHandler(async (req, res) => {
-
+    //console.log(req.headers.authorization);
     const users = await User.find()
     res.status(200).json(users)
 })
