@@ -11,6 +11,24 @@ const { User } = require('../models/UserModel')
 
 module.exports.getAllUsersProfile = asyncHandler(async (req, res) => {
     //console.log(req.headers.authorization);
-    const users = await User.find()
+    const users = await User.find().select("-password")
     res.status(200).json(users)
+})
+
+// =================== Get User Profile ===================
+/**
+ * @desc    Get User Profile
+ * @route   /api/auth/profile/:id
+ * @method  GET
+ * @access  public
+ */
+module.exports.getUserProfileCtrl = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select("-password")
+    // chech if user not found
+    if (!user) {
+        return res.status(404).json({ message: "user not found" });
+    }
+    res.status(200).json(user)
+
+
 })
