@@ -70,3 +70,16 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
     res.status(200).json(updateUser)
 })
 
+// =================== Get Users Count ===================
+/**
+ * @desc    Get Users Count
+ * @route   /api/auth/count
+ * @method  GET
+ * @access  private (only admin)
+ */
+
+module.exports.getUsersCountCtrl = asyncHandler(async (req, res) => {
+    const count = await User.countDocuments()
+    res.status(200).json(count)
+})
+
