@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler')
-const { User } = require('../models/UserModel')
+const { User, validateUpdateUser } = require('../models/UserModel')
+const bcrypt = require('bcryptjs');
+
 
 // =================== Get all Users Profile ===================
 /**
@@ -32,3 +34,39 @@ module.exports.getUserProfileCtrl = asyncHandler(async (req, res) => {
 
 
 })
+
+// =================== Update User Profile ===================
+/**
+ * @desc    Update User Profile
+ * @route   /api/auth/profile/:id
+ * @method  PUT
+ * @access  private (only user himself)
+ */
+
+module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
+    // validation
+    const { error } = validateUpdateUser(req.body)
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message })
+    }
+    // hash  password
+    if (req.body.password) {
+        const salt = await bcrypt.genSalt(10)
+        req.body.password = await bcrypt.hash(req.body.password, salt)
+    }
+    // update user in DB
+    const updateUser = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+            $set: {
+                username: req.body.username,
+                password: req.body.password,
+                bio: req.body.bio
+            }
+        },
+        { new: true }).select('-password')
+
+    // sent response to client
+    res.status(200).json(updateUser)
+})
+
