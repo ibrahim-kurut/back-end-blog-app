@@ -83,3 +83,16 @@ module.exports.getUsersCountCtrl = asyncHandler(async (req, res) => {
     res.status(200).json(count)
 })
 
+// =================== Profile Photo Upload  ===================
+/**
+ * @desc    Profile Photo Upload 
+ * @route   /api/users/profile/profile-photo-Upload 
+ * @method  POST
+ * @access  private (only logged in user)
+ */
+
+module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
+    console.log(req.file);
+    res.status(200).json({ message: "Profile Photo Upload Successfully!" });
+})
+
