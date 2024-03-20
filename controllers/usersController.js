@@ -1,7 +1,9 @@
 const asyncHandler = require('express-async-handler')
 const { User, validateUpdateUser } = require('../models/UserModel')
 const bcrypt = require('bcryptjs');
-
+const path = require('path');
+const { cloudinaryUploadImage, cloudinaryRemoveImage } = require('../utils/cloudinary');
+const fs = require('fs');
 
 // =================== Get all Users Profile ===================
 /**
@@ -92,7 +94,46 @@ module.exports.getUsersCountCtrl = asyncHandler(async (req, res) => {
  */
 
 module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
-    console.log(req.file);
-    res.status(200).json({ message: "Profile Photo Upload Successfully!" });
+
+    // 1- validation
+    // console.log(req.file);
+    if (!req.file) {
+        return res.status(404).json({ message: "No file provided" })
+    }
+
+    // 2- get the path to the photo
+    const imgPath = path.join(__dirname, `../images/${req.file.filename}`)
+
+    // 3- upload to cloudinary
+    const result = await cloudinaryUploadImage(imgPath)
+    // console.log(result);
+
+    // 4- get the user from DB
+    const user = await User.findById(req.user.id)
+    // 5- delete the old profile photo if exist
+    if (user.profilePhoto.publicId !== null) {
+        await cloudinaryRemoveImage(user.profilePhoto.publicId)
+    }
+    // 6- change the profile photo field in the DB
+    user.profilePhoto = {
+        url: result.secure_url,
+        publicId: result.public_id,
+    }
+    await user.save()
+
+    // 7- sent response to client
+    res.status(200).json({
+        message: "Profile Photo Upload Successfully!",
+        profilePhoto: {
+            url: result.secure_url,
+            publicId: result.public_id,
+        }
+
+    });
+
+    // 8- remove photo from the server
+    fs.unlinkSync(imgPath)
+
+
 })
 
