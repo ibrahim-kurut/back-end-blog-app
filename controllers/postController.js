@@ -90,4 +90,33 @@ module.exports.getAllPostsCtrl = asyncHandler(async (req, res) => {
     }
     res.status(200).json(posts);
 })
+// ======= Get Single Post
+/**
+ * @desc Get Single Post
+ * @route /api/post/:id
+ * @method GET
+ * @access public
+ */
 
+module.exports.getSinglePostCtrl = asyncHandler(async (req, res) => {
+    const post = await Post.findById(req.params.id).populate("user", ['-password'])
+    if (!post) {
+        return res.status(404).json({ message: "post not found" })
+    }
+    res.status(200).json(post);
+})
+
+
+// ======= Get Count of Posts
+/**
+ * @desc Get Count of Posts
+ * @route /api/post/count
+ * @method GET
+ * @access public
+ */
+
+module.exports.getCountPostsCtrl = asyncHandler(async (req, res) => {
+    const count = await Post.countDocuments()
+
+    res.status(200).json(count);
+})

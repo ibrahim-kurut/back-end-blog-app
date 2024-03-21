@@ -1,10 +1,10 @@
-const { createPostCtrl, getAllPostsCtrl } = require('../controllers/postController');
+const router = require('express').Router();
+const { createPostCtrl, getAllPostsCtrl, getSinglePostCtrl, getCountPostsCtrl } = require('../controllers/postController');
 const photoUpload = require('../middlewares/photoUpload');
 const validateImageCount = require('../middlewares/validateImageCount');
 const validateObjectId = require('../middlewares/validateObjectId');
 const { verifyToken } = require('../middlewares/verifyToken');
 
-const router = require('express').Router();
 
 // /api/posts
 
@@ -13,4 +13,11 @@ const router = require('express').Router();
 router.route('/')
     .post(verifyToken, photoUpload.array('images', 1), createPostCtrl)
     .get(getAllPostsCtrl);
+
+// /api/posts/count
+router.route('/count').get(getCountPostsCtrl)
+
+// /api/posts/:id
+router.route('/:id').get(validateObjectId, getSinglePostCtrl)
+
 module.exports = router
