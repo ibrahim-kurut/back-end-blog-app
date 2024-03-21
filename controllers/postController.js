@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler')
 const path = require('path');
 const fs = require('fs');
 const { validateCreatePost, Post } = require('../models/PostModel');
-const { cloudinaryUploadImage } = require('../utils/cloudinary');
+const { cloudinaryUploadImage, cloudinaryRemoveImage } = require('../utils/cloudinary');
 
 // Create New Post
 /**
@@ -119,4 +119,36 @@ module.exports.getCountPostsCtrl = asyncHandler(async (req, res) => {
     const count = await Post.countDocuments()
 
     res.status(200).json(count);
+})
+
+// ======= Delete Post
+/**
+ * @desc Delete Post
+ * @route /api/post/:id
+ * @method DELETE
+ * @access private (only admin or owner of the post)
+ */
+
+module.exports.deletePostCtrl = asyncHandler(async (req, res) => {
+    // 1- get post to be deleted and check the post exist or not
+    const post = await Post.findById(req.params.id)
+    if (!post) {
+        return res.status(404).json({ message: "post not found" })
+    }
+
+    // 2- If it is admin or the user who shared the post, allow it to be deleted.
+    if (req.user.isAdmin || req.user.id === post.user.toString()) {
+        await Post.findByIdAndDelete(req.params.id)
+        await cloudinaryRemoveImage(post.images.publicId)
+
+        /**@TODO */
+        // delete all comments that belong to this post
+        res.status(200).json({
+            message: 'post deleted successfully',
+            postId: post._id
+        });
+    } else {
+        res.status(403).json({ message: 'you are unauthorized' })
+    }
+
 })
