@@ -56,3 +56,38 @@ module.exports.createPostCtrl = asyncHandler(async (req, res) => {
     })
 
 })
+
+// ========== Get All Post
+/**
+ * @desc Get All Post
+ * @route /api/posts
+ * @method GET
+ * @access public
+ */
+module.exports.getAllPostsCtrl = asyncHandler(async (req, res) => {
+    // create pagination
+    const POST_PER_PAGE = 3; // 3 posts per page
+    const { pageNumber, category } = req.query;
+    let posts;
+
+    // ===== get post by Page Number =====
+    if (pageNumber) {
+        posts = await Post.find()
+            .skip((pageNumber - 1) * POST_PER_PAGE)
+            .limit(POST_PER_PAGE)
+            .sort({ createdAt: -1 })
+            .populate("user", ['-password'])
+        // ===== get post by category =====
+    } else if (category) {
+        posts = await Post.find({ category })
+            .sort({ createdAt: -1 })
+            .populate("user", ['-password'])
+            ;
+    } else {
+        posts = await Post.find()
+            .sort({ createdAt: -1 })
+            .populate("user", ['-password'])
+    }
+    res.status(200).json(posts);
+})
+
