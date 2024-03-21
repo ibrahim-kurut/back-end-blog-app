@@ -16,7 +16,7 @@ module.exports.createPostCtrl = asyncHandler(async (req, res) => {
 
     // 1- validation for images
     if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).json({ message: "sec No file uploaded" })
+        return res.status(400).json({ message: "No file uploaded" })
     }
 
     // 2- validation for data
