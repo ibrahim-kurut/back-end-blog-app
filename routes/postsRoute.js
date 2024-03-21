@@ -1,0 +1,14 @@
+const { createPostCtrl } = require('../controllers/postController');
+const photoUpload = require('../middlewares/photoUpload');
+const validateImageCount = require('../middlewares/validateImageCount');
+const { verifyToken } = require('../middlewares/verifyToken');
+
+const router = require('express').Router();
+
+// /api/posts
+
+// We want the user to upload a minimum of 5 photos and a maximum of 10 photos
+// router.route('/').post(verifyToken, photoUpload.array('images', 10), validateImageCount, createPostCtrl)
+router.route('/').post(verifyToken, photoUpload.array('images', 1), createPostCtrl)
+
+module.exports = router
