@@ -45,9 +45,20 @@ function verifyTokenAndOnlyUser(req, res, next) {
     })
 }
 
+// Verify Token and Authorization => delete profile
+function verifyTokenAndAuthorization(req, res, next) {
+    verifyToken(req, res, () => {
+        if (req.params.id === req.user.id || req.user.isAdmin) {
+            next()
+        } else {
+            return res.status(403).json({ message: "you can`not delete this account only user or admin" })
+        }
+    })
+}
 
 module.exports = {
     verifyToken,
     verifyTokenAndAdmin,
-    verifyTokenAndOnlyUser
+    verifyTokenAndOnlyUser,
+    verifyTokenAndAuthorization
 };
