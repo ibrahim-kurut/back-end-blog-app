@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { createPostCtrl, getAllPostsCtrl, getSinglePostCtrl, getCountPostsCtrl, deletePostCtrl, upddatePostCtrl } = require('../controllers/postController');
+const { createPostCtrl, getAllPostsCtrl, getSinglePostCtrl, getCountPostsCtrl, deletePostCtrl, upddatePostCtrl, toggleLikeCtrl } = require('../controllers/postController');
 const photoUpload = require('../middlewares/photoUpload');
 const validateImageCount = require('../middlewares/validateImageCount');
 const validateObjectId = require('../middlewares/validateObjectId');
@@ -23,4 +23,7 @@ router.route('/:id')
     .delete(validateObjectId, verifyToken, deletePostCtrl)
     .put(validateObjectId, verifyToken, upddatePostCtrl)
 
+
+// /api/posts/like/:id
+router.route('/like/:id').put(validateObjectId, verifyToken, toggleLikeCtrl)
 module.exports = router

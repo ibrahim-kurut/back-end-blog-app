@@ -194,3 +194,45 @@ module.exports.upddatePostCtrl = asyncHandler(async (req, res) => {
 
     })
 })
+
+// ======= Toggle Like
+/**---------------------------------------------------
+ * @desc Toggle Like
+ * @route /api/posts/like/:id
+ * @method PUT
+ * @access private (only logged in user)
+ ---------------------------------------------------*/
+module.exports.toggleLikeCtrl = asyncHandler(async (req, res) => {
+
+    const loggedInUser = req.user.id; // The user who is logged in
+    const { id: postId } = req.params; // The id of the post that we want to like
+
+    // 1. get the post from DB
+    let post = await Post.findById(postId)
+    // 2. check if the post exist in DB or no
+    if (!post) {
+        return res.status(404).json({ message: "this post not found" })
+    }
+
+
+    // 3. check if logged in user (user.id) exsit in like array or no
+    const isPostAlreadyLiked = post.likes.find((user) => user.toString() === loggedInUser)
+
+    // check if this user a like or not? If likes, we will remove the like
+    if (isPostAlreadyLiked) {
+        post = await Post.findByIdAndUpdate(postId, {
+            // pull ==> from mongoose It can remove the value from the array
+            // remove userId from the likes array
+            $pull: { likes: loggedInUser }
+        },
+            { new: true })
+    } else {
+        // push into the array
+        post = await Post.findByIdAndUpdate(postId, {
+            $push: { likes: loggedInUser }
+        },
+            { new: true })
+    }
+    // 5. send response to client
+    res.status(200).json(post)
+})
