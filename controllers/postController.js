@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const path = require('path');
 const fs = require('fs');
-const { validateCreatePost, Post } = require('../models/PostModel');
+const { validateCreatePost, Post, validateUpdatePost } = require('../models/PostModel');
 const { cloudinaryUploadImage, cloudinaryRemoveImage } = require('../utils/cloudinary');
 
 // Create New Post
@@ -151,4 +151,46 @@ module.exports.deletePostCtrl = asyncHandler(async (req, res) => {
         res.status(403).json({ message: 'you are unauthorized' })
     }
 
+})
+
+
+// ======= Update Post
+/**---------------------------------------------------
+ * @desc Update Post
+ * @route /api/post/:id
+ * @method PUT
+ * @access private (only owner of the post)
+ ---------------------------------------------------*/
+
+module.exports.upddatePostCtrl = asyncHandler(async (req, res) => {
+    // 1- validation
+    const { error } = validateUpdatePost(req.body)
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message })
+    }
+    // 2- get the from DB and check if post exist or not
+    const post = await Post.findById(req.params.id)
+    if (!post) {
+        return res.status(404).json({ message: 'post not found' })
+    }
+    // 3- check if this post belong to logged in user
+    if (req.user.id !== post.user.toString()) {
+        return res.status(403).json({ message: 'you are unauthorized' })
+    }
+    // 4- update post
+    const updatePost = await Post.findByIdAndUpdate(req.params.id, {
+        $set: {
+            title: req.body.title,
+            description: req.body.description,
+            category: req.body.category
+        }
+    },
+        { new: true })
+        .populate("user", ["-password"])
+    // 5- send response to client
+    res.status(200).json({
+        message: 'update successfully',
+        updatePost
+
+    })
 })
