@@ -15,7 +15,7 @@ const fs = require('fs');
 
 module.exports.getAllUsersProfile = asyncHandler(async (req, res) => {
     //console.log(req.headers.authorization);
-    const users = await User.find().select("-password")
+    const users = await User.find().select("-password").populate("posts")
     res.status(200).json(users)
 })
 
@@ -27,7 +27,7 @@ module.exports.getAllUsersProfile = asyncHandler(async (req, res) => {
  * @access  public
  */
 module.exports.getUserProfileCtrl = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id).select("-password")
+    const user = await User.findById(req.params.id).select("-password").populate("posts")
     // chech if user not found
     if (!user) {
         return res.status(404).json({ message: "user not found" });
