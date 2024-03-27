@@ -17,6 +17,7 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/users', require('./routes/usersRoute'));
 app.use('/api/posts', require('./routes/postsRoute'));
+app.use('/api/comments', require('./routes/commentsRoute'));
 
 // Running Server
 const port = process.env.PORT || 5000;
