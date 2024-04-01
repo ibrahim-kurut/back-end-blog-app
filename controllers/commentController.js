@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const { Comment, validateCreateComment } = require('../models/CommentModel')
+const { Comment, validateCreateComment, validateUpdateComment } = require('../models/CommentModel')
 const { User } = require('../models/UserModel')
 
 
@@ -64,4 +64,38 @@ module.exports.deleteCommentsCtrl = asyncHandler(async (req, res) => {
     } else {
         res.status(403).json({ message: "you don't have permission to do that!" })
     }
+})
+
+//! Update Comment
+/**
+ * @desc Update Comment
+ * @route /api/comment/:id
+ * @method PUT 
+ * @access private (Only the creator of the comment can edit it)
+ */
+
+module.exports.updateCommentCtrl = asyncHandler(async (req, res) => {
+    // 1- validate
+    const { error } = validateUpdateComment(req.body)
+    if (error) {
+        res.status(400).json({ message: error.details[0].message })
+    }
+    // 2- get the comment from DB
+    const comment = await Comment.findById(req.params.id)
+    // 3- check if the coment exist or no
+    if (!comment) {
+        res.status(404).json({ message: "The comment does not exists." })
+    }
+    // 4- check the user is the owner of the commnet or no
+    if (req.user.id !== comment.user.toString()) {
+        res.status(403).json({ message: "You can not edit this comment" })
+    }
+    // 5- update comment
+    const updateComment = await Comment.findByIdAndUpdate(req.params.id, {
+        $set: {
+            comment: req.body.comment
+        }
+    }, { new: true })
+    // 6- send response to client
+    res.status(200).json(updateComment)
 })
