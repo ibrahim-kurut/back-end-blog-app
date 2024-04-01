@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { validateCreatePost, Post, validateUpdatePost } = require('../models/PostModel');
 const { cloudinaryUploadImage, cloudinaryRemoveImage } = require('../utils/cloudinary');
-
+const { Comment } = require('../models/CommentModel')
 // Create New Post
 /**
  * @desc Create New Post
@@ -141,8 +141,9 @@ module.exports.deletePostCtrl = asyncHandler(async (req, res) => {
         await Post.findByIdAndDelete(req.params.id)
         await cloudinaryRemoveImage(post.images.publicId)
 
-        /**@TODO */
+
         // delete all comments that belong to this post
+        await Comment.deleteMany({ postId: post._id })
         res.status(200).json({
             message: 'post deleted successfully',
             postId: post._id
