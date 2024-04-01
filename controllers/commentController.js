@@ -42,3 +42,26 @@ module.exports.getAllCommentsCtrl = asyncHandler(async (req, res) => {
     const comments = await Comment.find().populate("user")
     res.status(200).json(comments)
 })
+
+//! Delete Comment
+/**
+ * @desc Delete Comment
+ * @route /api/comment/:id
+ * @method DELETE 
+ * @access private (only admin or  creator of the comment can delete it)
+ */
+module.exports.deleteCommentsCtrl = asyncHandler(async (req, res) => {
+    // 1- get the comment from DB
+    const comment = await Comment.findById(req.params.id)
+    // 2- check if comment exist or no
+    if (!comment) {
+        res.status(404).json({ message: "Comment not found" })
+    }
+    // 3- check the user is an admin  or the creator of this comment
+    if (req.user.isAdmin || req.user.id === comment.user.toString()) {
+        await Comment.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Deleted Successfully" })
+    } else {
+        res.status(403).json({ message: "you don't have permission to do that!" })
+    }
+})
