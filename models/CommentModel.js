@@ -5,7 +5,7 @@ const Joi = require('joi')
 
 const CommentSchema = new mongoose.Schema({
     // Her yorumun kendisine bağlı bir postId'si vardır; bu yorumun ait olduğu gönderinin kimliğidir
-    posoId: {
+    postId: {
         type: mongoose.Schema.Types.ObjectId,  // reference to the post model id
         ref: "Post",
         require: true

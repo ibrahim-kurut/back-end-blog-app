@@ -40,7 +40,17 @@ const postSchema = new mongoose.Schema({
             ref: 'User'
         }
     ]
-}, { timestamps: true });
+}, {
+    timestamps: true,
+    // Create a relationship between the comment and the post that it is related to.
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+postSchema.virtual('comments', {
+    ref: 'Comment', // from comment model
+    foreignField: 'postId',
+    localField: '_id',
+})
 
 // Create Post Model
 const Post = mongoose.model("Post", postSchema);
