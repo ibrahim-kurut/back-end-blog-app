@@ -30,3 +30,15 @@ module.exports.createCommentCtrl = asyncHandler(async (req, res) => {
     // 4- send response to client
     res.status(201).json(newComment)
 })
+
+//! Get All Comment
+/**
+ * @desc Get All Comment
+ * @route /api/comments
+ * @method GET 
+ * @access private (only admin)
+ */
+module.exports.getAllCommentsCtrl = asyncHandler(async (req, res) => {
+    const comments = await Comment.find().populate("user")
+    res.status(200).json(comments)
+})
