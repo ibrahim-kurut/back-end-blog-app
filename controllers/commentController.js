@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const { Comment, validateCreateComment, validateUpdateComment } = require('../models/CommentModel')
 const { User } = require('../models/UserModel')
+const { Post } = require('../models/PostModel')
 
 
 //! Create New Comment
@@ -19,6 +20,13 @@ module.exports.createCommentCtrl = asyncHandler(async (req, res) => {
     }
     // 2- get user profile because username is required from the user's id
     const userProfile = await User.findById(req.user.id)
+
+    // Get the post that is being commented on
+    const post = await Post.findById(req.params.id)
+    if (!post) {
+        return res.status(404).json({ message: "No post found with this ID ....." })
+    }
+
 
     // 3- create new comment
     const newComment = await Comment.create({
