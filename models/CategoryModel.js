@@ -29,7 +29,17 @@ function validateCreateCategory(obj) {
     return schema.validate(obj);
 }
 
+
+// Validation Update Category
+function validateUpdateCategory(obj) {
+    const schema = Joi.object({
+        title: Joi.string().required(),
+    })
+    return schema.validate(obj)
+}
+
 module.exports = {
     Category,
-    validateCreateCategory
+    validateCreateCategory,
+    validateUpdateCategory
 }
