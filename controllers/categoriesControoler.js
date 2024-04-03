@@ -35,3 +35,24 @@ module.exports.getAllCategoryCtrl = asyncHandler(async (req, res) => {
     const categories = await Category.find()
     res.status(200).json(categories)
 })
+//! Delete Category
+/**
+ * @desc Delete Category
+ * @route /api/categories/:id
+ * @method DELETE 
+ * @access private (only admin)
+ */
+
+module.exports.deleteCategoryCtrl = asyncHandler(async (req, res) => {
+    // 1- get category by id
+    const category = await Category.findById(req.params.id)
+
+    // 2- check if the category exist or not
+    if (!category) {
+        return res.status(404).json({ message: 'Category not found' })
+    }
+    // 3- delete category
+    await Category.findByIdAndDelete(req.params.id)
+    // 4- send response to client
+    res.status(200).json({ message: 'Category Deleted Successfully!' })
+})
