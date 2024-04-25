@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const dbConnection = require('./config/db');
 const { errorHandler, notFoundMiddleware } = require('./middlewares/error');
 
@@ -13,6 +14,9 @@ const app = express();
 
 // middleware
 app.use(express.json());
+
+// Cors middleware for allowing requests from any origin
+app.use(cors());
 
 // Routes
 app.use('/api/auth', require('./routes/authRoute'));
