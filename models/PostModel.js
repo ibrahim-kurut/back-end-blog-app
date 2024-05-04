@@ -25,15 +25,23 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    images: [{
-        url: {
-            type: String,
-            required: true
-        },
-        public_id: {
-            type: String
+    //! for multi images
+    // images: [{
+    //     url: {
+    //         type: String,
+    //         required: true
+    //     },
+    //     public_id: {
+    //         type: String
+    //     }
+    // }],
+    image: {
+        type: Object,
+        default: {
+            url: "",
+            publicId: null
         }
-    }],
+    },
     likes: [
         {
             type: mongoose.Schema.Types.ObjectId,

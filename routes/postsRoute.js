@@ -10,8 +10,13 @@ const { verifyToken } = require('../middlewares/verifyToken');
 
 // We want the user to upload a minimum of 5 photos and a maximum of 10 photos
 // router.route('/').post(verifyToken, photoUpload.array('images', 10), validateImageCount, createPostCtrl)
+//! for Add multiple image
+// router.route('/')
+//     .post(verifyToken, photoUpload.array('images', 1), createPostCtrl)
+//     .get(getAllPostsCtrl);
+
 router.route('/')
-    .post(verifyToken, photoUpload.array('images', 1), createPostCtrl)
+    .post(verifyToken, photoUpload.single('image'), createPostCtrl)
     .get(getAllPostsCtrl);
 
 // /api/posts/count
