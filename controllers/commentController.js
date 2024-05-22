@@ -22,10 +22,10 @@ module.exports.createCommentCtrl = asyncHandler(async (req, res) => {
     const userProfile = await User.findById(req.user.id)
 
     // Get the post that is being commented on
-    const post = await Post.findById(req.params.id)
-    if (!post) {
-        return res.status(404).json({ message: "No post found with this ID ....." })
-    }
+    // const post = await Post.findById(req.params.id)
+    // if (!post) {
+    //     return res.status(404).json({ message: "No post found with this ID ....." })
+    // }
 
 
     // 3- create new comment
