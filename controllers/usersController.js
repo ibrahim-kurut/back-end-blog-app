@@ -159,7 +159,7 @@ module.exports.deleteUserProfileCtrl = asyncHandler(async (req, res) => {
     const posts = await Post.find({ user: user._id })
 
     // 3- get the public ids from the posts
-    const publicIds = posts?.map((post) => post.images.publicId)
+    const publicIds = posts?.map((post) => post.image.publicId)
 
     // 4- delete all posts  image  from Cloudinary that belong to this user
     if (publicIds?.length > 0) {
@@ -167,7 +167,9 @@ module.exports.deleteUserProfileCtrl = asyncHandler(async (req, res) => {
     }
 
     // 5- delete the profile  image from Cloudinary
-    await cloudinaryRemoveImage(user.profilePhoto.publicId)
+    if (user.profilePhoto.publicId !== null) {
+        await cloudinaryRemoveImage(user.profilePhoto.publicId)
+    }
 
     // 6- delete the user posts and comments
     await Post.deleteMany({ user: user._id })
