@@ -69,6 +69,8 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
             }
         },
         { new: true }).select('-password')
+        // When you update your profile, return all your posts to the user
+        .populate("posts")
 
     // sent response to client
     res.status(200).json(updateUser)
